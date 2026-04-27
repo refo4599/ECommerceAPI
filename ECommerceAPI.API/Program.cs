@@ -1,6 +1,7 @@
 using ECommerceAPI.API.Extensions;
 using ECommerceAPI.API.Middlewares;
 using ECommerceAPI.Infrastructure.Data;
+using ECommerceAPI.Infrastructure.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,10 +12,10 @@ builder.Services.AddJwtAuth(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddSwaggerWithJwt();
 builder.Services.AddCorsPolicy();
+builder.Services.AddSignalRService();
 
 var app = builder.Build();
 
-// Auto-migrate
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -33,5 +34,8 @@ app.UseCors("Angular");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// SignalR endpoint
+app.MapHub<StockHub>("/hubs/stock");
 
 app.Run();

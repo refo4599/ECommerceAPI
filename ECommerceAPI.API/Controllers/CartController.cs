@@ -66,4 +66,29 @@ public class CartController(ICartService cartService) : ControllerBase
             return NotFound(new { success = false, message = "الكارت مش موجود" });
         return Ok(new { success = true, message = "تم مسح الكارت" });
     }
+
+    [HttpPost("switch-branch")]
+    public async Task<IActionResult> SwitchBranch(SwitchBranchRequest req)
+    {
+        try
+        {
+            var result = await cartService.SwitchBranchAsync(UserId, req);
+
+            var message = result.RemovedItems.Any()
+                ? $"تم نقل الكارت، بس {result.RemovedItems.Count} منتج مش متاح في الفرع الجديد"
+                : "تم نقل الكارت بنجاح";
+
+            return Ok(new
+            {
+                success = true,
+                message,
+                data = result.Cart,
+                removedItems = result.RemovedItems
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { success = false, message = ex.Message });
+        }
+    }
 }

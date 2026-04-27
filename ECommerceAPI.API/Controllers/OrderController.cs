@@ -13,7 +13,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
 {
     private int UserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-    // الكستمر يعمل أوردر من الكارت
     [HttpPost]
     public async Task<IActionResult> CreateFromCart(CreateOrderRequest req)
     {
@@ -28,7 +27,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         }
     }
 
-    // الكستمر يشوف أوردراته
     [HttpGet("my")]
     public async Task<IActionResult> GetMyOrders()
     {
@@ -36,7 +34,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(new { success = true, data = orders });
     }
 
-    // Admin يشوف كل الأوردرات
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
@@ -45,7 +42,6 @@ public class OrdersController(IOrderService orderService) : ControllerBase
         return Ok(new { success = true, data = result });
     }
 
-    // Admin يغير status الأوردر
     [HttpPut("{orderId}/status")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateStatus(int orderId, UpdateOrderStatusRequest req)

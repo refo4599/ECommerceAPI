@@ -25,4 +25,14 @@ public record AddToCartRequest(
     int ProductId,
     int Quantity);
 
-public record UpdateCartItemRequest(int Quantity);
+public record UpdateCartItemRequest(int Quantity)
+{
+
+
+};
+
+public record SwitchBranchRequest(int NewBranchId);
+
+public record SwitchBranchResponse(
+    CartDto Cart,
+    List<string> RemovedItems);

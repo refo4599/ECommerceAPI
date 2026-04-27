@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using ECommerceAPI.Application.Common;
+﻿using ECommerceAPI.Application.Common;
 using ECommerceAPI.Application.DTOs.Order;
 using ECommerceAPI.Application.Interfaces;
 using ECommerceAPI.Application.Interfaces.Repositories;
@@ -10,7 +7,9 @@ using ECommerceAPI.Domain.Enums;
 
 namespace ECommerceAPI.Application.Services;
 
-public class OrderService(IUnitOfWork uow) : IOrderService
+public class OrderService(
+    IUnitOfWork uow,
+    IStockNotificationService stockNotification) : IOrderService
 {
     public async Task<OrderDto> CreateFromCartAsync(int userId, CreateOrderRequest req)
     {
@@ -21,12 +20,14 @@ public class OrderService(IUnitOfWork uow) : IOrderService
             throw new InvalidOperationException("الكرت فاضي");
 
         var orderItems = new List<OrderItem>();
+        var stockUpdates = new List<(int productId, int newStock)>();
 
         foreach (var ci in cart.CartItems)
         {
             var bp = await uow.BranchProducts
                 .GetByBranchAndProductAsync(req.BranchId, ci.ProductId)
-                ?? throw new InvalidOperationException($"{ci.Product?.Name} غير متاح في الفرع");
+                ?? throw new InvalidOperationException(
+                    $"{ci.Product?.Name} غير متاح في الفرع");
 
             if (bp.Stock < ci.Quantity)
                 throw new InvalidOperationException(
@@ -44,6 +45,8 @@ public class OrderService(IUnitOfWork uow) : IOrderService
             bp.Stock -= ci.Quantity;
             bp.UpdatedAt = DateTime.UtcNow;
             uow.BranchProducts.Update(bp);
+
+            stockUpdates.Add((ci.ProductId, bp.Stock));
         }
 
         var order = new Order
@@ -61,6 +64,12 @@ public class OrderService(IUnitOfWork uow) : IOrderService
             uow.CartItems.Remove(item);
 
         await uow.SaveChangesAsync();
+
+        foreach (var (productId, newStock) in stockUpdates)
+        {
+            await stockNotification.NotifyStockUpdatedAsync(
+                req.BranchId, productId, newStock);
+        }
 
         var created = await uow.Orders.GetByIdWithItemsAsync(order.Id);
         return MapToDto(created!);

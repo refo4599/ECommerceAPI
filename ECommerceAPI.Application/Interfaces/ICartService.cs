@@ -13,4 +13,5 @@ public interface ICartService
     Task<CartDto?> UpdateItemAsync(int userId, int cartItemId, UpdateCartItemRequest request);
     Task<bool> RemoveItemAsync(int userId, int cartItemId);
     Task<bool> ClearCartAsync(int userId, int branchId);
+    Task<SwitchBranchResponse> SwitchBranchAsync(int userId, SwitchBranchRequest request);
 }

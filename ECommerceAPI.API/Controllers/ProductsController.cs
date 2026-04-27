@@ -61,7 +61,6 @@ public class ProductsController(IProductService productService) : ControllerBase
         return Ok(new { success = true, message = "تم حذف المنتج" });
     }
 
-    // تعيين منتج لفرع
     [HttpPost("branch/{branchId}/assign")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AssignToBranch(int branchId, AssignProductRequest req)
@@ -70,7 +69,6 @@ public class ProductsController(IProductService productService) : ControllerBase
         return Ok(new { success = true, message = "تم تعيين المنتج للفرع" });
     }
 
-    // تحديث الستوك
     [HttpPut("branch/{branchId}/stock")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateStock(int branchId, UpdateStockRequest req)

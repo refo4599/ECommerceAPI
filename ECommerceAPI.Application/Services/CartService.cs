@@ -18,7 +18,6 @@ public class CartService(IUnitOfWork uow) : ICartService
 
     public async Task<CartDto> AddItemAsync(int userId, AddToCartRequest req)
     {
-        // ← الـ check المهم: كارت من فرع تاني؟
         var existingCart = await uow.Carts
             .FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -103,6 +102,76 @@ public class CartService(IUnitOfWork uow) : ICartService
 
         await uow.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<SwitchBranchResponse> SwitchBranchAsync(int userId, SwitchBranchRequest req)
+    {
+        var oldCart = await uow.Carts
+            .FirstOrDefaultAsync(c => c.UserId == userId);
+
+        if (oldCart is null || oldCart.BranchId == req.NewBranchId)
+        {
+            var emptyCart = await uow.Carts
+                .GetCartWithItemsAsync(userId, req.NewBranchId);
+            return new SwitchBranchResponse(
+                emptyCart is null
+                    ? new CartDto(0, req.NewBranchId, "", [], 0)
+                    : MapToDto(emptyCart),
+                []);
+        }
+
+        var oldCartFull = await uow.Carts
+            .GetCartWithItemsAsync(userId, oldCart.BranchId);
+
+        var removedItems = new List<string>();
+
+        var newCart = await uow.Carts
+            .GetCartWithItemsAsync(userId, req.NewBranchId);
+
+        if (newCart is null)
+        {
+            newCart = new Cart { UserId = userId, BranchId = req.NewBranchId };
+            await uow.Carts.AddAsync(newCart);
+            await uow.SaveChangesAsync();
+            newCart = await uow.Carts
+                .GetCartWithItemsAsync(userId, req.NewBranchId);
+        }
+
+        foreach (var item in oldCartFull!.CartItems)
+        {
+            var bp = await uow.BranchProducts
+                .GetByBranchAndProductAsync(req.NewBranchId, item.ProductId);
+
+            if (bp is null || !bp.IsAvailable || bp.Stock < item.Quantity)
+            {
+                removedItems.Add(item.Product?.Name ?? $"Product {item.ProductId}");
+                continue;
+            }
+
+            var existing = newCart!.CartItems
+                .FirstOrDefault(ci => ci.ProductId == item.ProductId);
+
+            if (existing is not null)
+                existing.Quantity += item.Quantity;
+            else
+                await uow.CartItems.AddAsync(new CartItem
+                {
+                    CartId = newCart!.Id,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity
+                });
+        }
+
+        foreach (var item in oldCartFull.CartItems)
+            uow.CartItems.Remove(item);
+
+        uow.Carts.Remove(oldCartFull);
+        await uow.SaveChangesAsync();
+
+        var updatedCart = await uow.Carts
+            .GetCartWithItemsAsync(userId, req.NewBranchId);
+
+        return new SwitchBranchResponse(MapToDto(updatedCart!), removedItems);
     }
 
     private static CartDto MapToDto(Cart c)

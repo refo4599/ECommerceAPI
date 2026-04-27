@@ -7,7 +7,6 @@ using ECommerceAPI.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
@@ -19,8 +18,7 @@ public static class ServiceExtensions
         this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<AppDbContext>(opt =>
-            opt.UseSqlServer(
-                config.GetConnectionString("DefaultConnection")));
+            opt.UseSqlServer(config.GetConnectionString("DefaultConnection")));
         return services;
     }
 
@@ -41,6 +39,22 @@ public static class ServiceExtensions
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
                 };
+
+                // مهم لـ SignalR
+                opt.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            path.StartsWithSegments("/hubs"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
         services.AddAuthorization();
@@ -53,6 +67,7 @@ public static class ServiceExtensions
         // Infrastructure
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IStockNotificationService, StockNotificationService>();
 
         // Application
         services.AddScoped<IAuthService, AuthService>();
@@ -62,6 +77,13 @@ public static class ServiceExtensions
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<IOrderService, OrderService>();
 
+        return services;
+    }
+
+    public static IServiceCollection AddSignalRService(
+        this IServiceCollection services)
+    {
+        services.AddSignalR();
         return services;
     }
 
@@ -92,11 +114,9 @@ public static class ServiceExtensions
                 {
                     new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
+                        Scheme = "Bearer",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
                     },
                     Array.Empty<string>()
                 }
