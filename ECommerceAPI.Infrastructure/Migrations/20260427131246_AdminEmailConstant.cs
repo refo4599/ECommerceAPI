@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ECommerceAPI.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ConnectionString : Migration
+    public partial class AdminEmailConstant : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

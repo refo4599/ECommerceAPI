@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\ECommerceAPI.Domain\ECommerceAPI.Domain.csproj" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<ProjectReference Include="..\ECommerceAPI.Domain\ECommerceAPI.Domain.csproj" />
+		<PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+	</ItemGroup>
 </Project>
