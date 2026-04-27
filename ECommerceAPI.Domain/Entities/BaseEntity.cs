@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ECommerceAPI.Domain.Entities
+namespace ECommerceAPI.Domain.Entities;
+
+public abstract class BaseEntity
 {
-    internal class BaseEntity
-    {
-    }
+    public int Id { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 }

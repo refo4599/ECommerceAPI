@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ECommerceAPI.Domain.Entities
+using ECommerceAPI.Domain.Enums;
+
+namespace ECommerceAPI.Domain.Entities;
+
+public class User : BaseEntity
 {
-    internal class User
-    {
-    }
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public UserRole Role { get; set; } = UserRole.Customer;
+
+    public ICollection<Cart> Carts { get; set; } = [];
+    public ICollection<Order> Orders { get; set; } = [];
 }
