@@ -57,6 +57,7 @@ public static class ServiceExtensions
         // Application
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IBranchService, BranchService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<IOrderService, OrderService>();
@@ -83,7 +84,7 @@ public static class ServiceExtensions
                 Scheme = "Bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = "اكتب التوكن هنا"
+                Description = "اكتب التوكن هنا بدون كلمة Bearer"
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -91,9 +92,11 @@ public static class ServiceExtensions
                 {
                     new OpenApiSecurityScheme
                     {
-                        Scheme = "Bearer",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header,
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
                     },
                     Array.Empty<string>()
                 }

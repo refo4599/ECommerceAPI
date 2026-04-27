@@ -60,17 +60,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
         mb.Entity<OrderItem>(e =>
             e.Property(oi => oi.UnitPrice).HasColumnType("decimal(18,2)"));
-
-        // Seed — الفرع الافتراضي
-        mb.Entity<Branch>().HasData(new Branch
-        {
-            Id = 1,
-            Name = "Stories",
-            NameAr = "ستوريز",
-            Slug = "stories",
-            IsDefault = true,
-            IsActive = true,
-            CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-        });
     }
 }

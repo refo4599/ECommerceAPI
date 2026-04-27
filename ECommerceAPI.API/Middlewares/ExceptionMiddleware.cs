@@ -28,8 +28,7 @@ public class ExceptionMiddleware(
             InvalidOperationException => (HttpStatusCode.BadRequest, ex.Message),
             UnauthorizedAccessException => (HttpStatusCode.Unauthorized, ex.Message),
             ArgumentException => (HttpStatusCode.BadRequest, ex.Message),
-            _ => (HttpStatusCode.InternalServerError,
-                                            "حصل خطأ، حاول تاني")
+            _ => (HttpStatusCode.InternalServerError, ex.Message)
         };
 
         context.Response.ContentType = "application/json";
