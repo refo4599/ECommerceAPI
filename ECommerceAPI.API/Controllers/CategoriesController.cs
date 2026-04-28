@@ -27,7 +27,7 @@ public class CategoriesController(ICategoryService categoryService) : Controller
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(CreateCategoryRequest req)
+    public async Task<IActionResult> Create([FromBody] CreateCategoryRequest req)
     {
         var category = await categoryService.CreateAsync(req);
         return CreatedAtAction(nameof(GetById), new { id = category.Id },
@@ -36,7 +36,7 @@ public class CategoriesController(ICategoryService categoryService) : Controller
 
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, UpdateCategoryRequest req)
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryRequest req)
     {
         var category = await categoryService.UpdateAsync(id, req);
         if (category is null)

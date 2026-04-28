@@ -61,7 +61,7 @@ public class BranchService(IUnitOfWork uow) : IBranchService
 
         uow.Branches.Update(branch);
         await uow.SaveChangesAsync();
-        return MapToDto(branch);  // ← الصح
+        return MapToDto(branch); 
     }
     public async Task<bool> DeleteAsync(int id)
     {

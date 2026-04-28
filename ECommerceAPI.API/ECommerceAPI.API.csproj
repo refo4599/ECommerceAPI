@@ -15,4 +15,8 @@
 		<ProjectReference Include="..\ECommerceAPI.Application\ECommerceAPI.Application.csproj" />
 		<ProjectReference Include="..\ECommerceAPI.Infrastructure\ECommerceAPI.Infrastructure.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\" />
+	</ItemGroup>
 </Project>

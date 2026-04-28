@@ -4,16 +4,11 @@ using System.Text;
 
 namespace ECommerceAPI.Application.DTOs.Product;
 
-public record CategoryDto(
-    int Id,
-    string Name,
-    string NameAr,
-    string? ImageUrl);
+public record CategoryDto(int Id, string Name, string? ImageUrl);
 
 public record ProductDto(
     int Id,
     string Name,
-    string NameAr,
     string? Description,
     decimal BasePrice,
     string? ImageUrl,
@@ -23,7 +18,6 @@ public record ProductDto(
 public record BranchProductDto(
     int Id,
     string Name,
-    string NameAr,
     string? Description,
     decimal EffectivePrice,
     string? ImageUrl,
@@ -33,7 +27,6 @@ public record BranchProductDto(
 
 public record CreateProductRequest(
     string Name,
-    string NameAr,
     string? Description,
     decimal BasePrice,
     string? ImageUrl,
@@ -41,7 +34,6 @@ public record CreateProductRequest(
 
 public record UpdateProductRequest(
     string? Name,
-    string? NameAr,
     string? Description,
     decimal? BasePrice,
     string? ImageUrl,

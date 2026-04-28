@@ -28,7 +28,7 @@ public class CategoryService(IUnitOfWork uow) : ICategoryService
         var category = new Category
         {
             Name = req.Name,
-            NameAr = req.NameAr,
+            Description = req.Description,
             ImageUrl = req.ImageUrl
         };
 
@@ -43,7 +43,7 @@ public class CategoryService(IUnitOfWork uow) : ICategoryService
         if (category is null) return null;
 
         if (req.Name is not null) category.Name = req.Name;
-        if (req.NameAr is not null) category.NameAr = req.NameAr;
+        if (req.Description is not null) category.Description = req.Description;
         if (req.ImageUrl is not null) category.ImageUrl = req.ImageUrl;
         category.UpdatedAt = DateTime.UtcNow;
 
@@ -63,5 +63,5 @@ public class CategoryService(IUnitOfWork uow) : ICategoryService
     }
 
     private static CategoryDto MapToDto(Category c) =>
-        new(c.Id, c.Name, c.NameAr, c.ImageUrl);
+        new(c.Id, c.Name, c.Description, c.ImageUrl);
 }

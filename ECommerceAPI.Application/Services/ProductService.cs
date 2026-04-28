@@ -30,7 +30,6 @@ public class ProductService(IUnitOfWork uow) : IProductService
             .Select(bp => new BranchProductDto(
                 bp.ProductId,
                 bp.Product.Name,
-                bp.Product.NameAr,
                 bp.Product.Description,
                 bp.PriceOverride ?? bp.Product.BasePrice,
                 bp.Product.ImageUrl,
@@ -40,7 +39,6 @@ public class ProductService(IUnitOfWork uow) : IProductService
                     new CategoryDto(
                         bp.Product.Category.Id,
                         bp.Product.Category.Name,
-                        bp.Product.Category.NameAr,
                         bp.Product.Category.ImageUrl)));
     }
 
@@ -49,7 +47,6 @@ public class ProductService(IUnitOfWork uow) : IProductService
         var product = new Product
         {
             Name = req.Name,
-            NameAr = req.NameAr,
             Description = req.Description,
             BasePrice = req.BasePrice,
             ImageUrl = req.ImageUrl,
@@ -69,7 +66,6 @@ public class ProductService(IUnitOfWork uow) : IProductService
         if (product is null) return null;
 
         if (req.Name is not null) product.Name = req.Name;
-        if (req.NameAr is not null) product.NameAr = req.NameAr;
         if (req.Description is not null) product.Description = req.Description;
         if (req.BasePrice.HasValue) product.BasePrice = req.BasePrice.Value;
         if (req.ImageUrl is not null) product.ImageUrl = req.ImageUrl;
@@ -135,9 +131,11 @@ public class ProductService(IUnitOfWork uow) : IProductService
     }
 
     private static ProductDto MapToDto(Product p) => new(
-        p.Id, p.Name, p.NameAr, p.Description,
+        p.Id, p.Name, p.Description,
         p.BasePrice, p.ImageUrl, p.IsActive,
         p.Category is null ? null :
-            new CategoryDto(p.Category.Id, p.Category.Name,
-                p.Category.NameAr, p.Category.ImageUrl));
+            new CategoryDto(
+                p.Category.Id,
+                p.Category.Name,
+                p.Category.ImageUrl));
 }
