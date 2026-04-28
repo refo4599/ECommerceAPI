@@ -40,7 +40,6 @@ public static class ServiceExtensions
                         Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
                 };
 
-                // مهم لـ SignalR
                 opt.Events = new JwtBearerEvents
                 {
                     OnMessageReceived = context =>
@@ -114,9 +113,11 @@ public static class ServiceExtensions
                 {
                     new OpenApiSecurityScheme
                     {
-                        Scheme = "Bearer",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header,
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
                     },
                     Array.Empty<string>()
                 }

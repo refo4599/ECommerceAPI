@@ -27,9 +27,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.Property(u => u.Role).HasConversion<string>();
         });
 
-        mb.Entity<Branch>(e =>
-            e.HasIndex(b => b.Slug).IsUnique());
-
         mb.Entity<Product>(e =>
             e.Property(p => p.BasePrice).HasColumnType("decimal(18,2)"));
 

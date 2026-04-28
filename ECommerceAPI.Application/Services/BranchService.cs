@@ -36,9 +36,7 @@ public class BranchService(IUnitOfWork uow) : IBranchService
         var branch = new Branch
         {
             Name = req.Name,
-            NameAr = req.NameAr,
-            Slug = req.Slug,
-            ImageUrl = req.ImageUrl,
+            Location = req.Location,
             IsDefault = req.IsDefault
         };
 
@@ -56,17 +54,15 @@ public class BranchService(IUnitOfWork uow) : IBranchService
             await uow.Branches.ResetDefaultAsync();
 
         if (req.Name is not null) branch.Name = req.Name;
-        if (req.NameAr is not null) branch.NameAr = req.NameAr;
-        if (req.ImageUrl is not null) branch.ImageUrl = req.ImageUrl;
+        if (req.Location is not null) branch.Location = req.Location;
         if (req.IsDefault.HasValue) branch.IsDefault = req.IsDefault.Value;
         if (req.IsActive.HasValue) branch.IsActive = req.IsActive.Value;
         branch.UpdatedAt = DateTime.UtcNow;
 
         uow.Branches.Update(branch);
         await uow.SaveChangesAsync();
-        return MapToDto(branch);
+        return MapToDto(branch);  // ← الصح
     }
-
     public async Task<bool> DeleteAsync(int id)
     {
         var branch = await uow.Branches.GetByIdAsync(id);
@@ -80,6 +76,5 @@ public class BranchService(IUnitOfWork uow) : IBranchService
     }
 
     private static BranchDto MapToDto(Branch b) =>
-        new(b.Id, b.Name, b.NameAr, b.Slug,
-            b.ImageUrl, b.IsDefault, b.IsActive);
+        new(b.Id, b.Name, b.Location, b.IsDefault, b.IsActive);
 }
